@@ -20,3 +20,8 @@ gui.antiqueatlas.export.selectFile=Select PNG file to save to
 gui.antiqueatlas.export.tooLarge=Sorry! The image is too large to render, try increasing Java heap size.
 gui.antiqueatlas.export.rendering=Rendering...
 gui.antiqueatlas.export.writing=Writing to file...
+
+tile.signpost.name=Signpost
+item.signpostMarker.name=Signpost Marker
+item.signpostMarker.desc=Right-click a signpost to name it
+gui.antiqueatlas.signpost.label=Inscription

@@ -20,3 +20,7 @@ gui.antiqueatlas.export.selectFile=Укажите PNG файл, куда сох�
 gui.antiqueatlas.export.tooLarge=Извините, картинка слишком большая. Попробуйте выделить больше памяти для Java.
 gui.antiqueatlas.export.rendering=Отрисовка...
 gui.antiqueatlas.export.writing=Запись в файл...
+tile.signpost.name=Указатель
+item.signpostMarker.name=Маркер указателя
+item.signpostMarker.desc=Щёлкните по указателю, чтобы дать ему название
+gui.antiqueatlas.signpost.label=Надпись

@@ -27,7 +27,7 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << '-Xlint:unchecked'
 }
 
-version = "1.1-Ariamis"
+version = "1.7-Ariamis"
 group= "kenkron.antiqueatlasoverlay" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Antiqueatlas-1.7.10"
 
@@ -62,6 +62,7 @@ repositories {
 dependencies {
     implementation name: 'bukkit'
     compile name: 'Baubles'
+    testCompile 'junit:junit:4.12'
 }
 
 task deobfJar(type: Jar) {

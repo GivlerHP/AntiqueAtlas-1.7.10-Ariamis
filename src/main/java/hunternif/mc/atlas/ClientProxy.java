@@ -9,6 +9,8 @@ import hunternif.mc.atlas.client.TextureSetConfig;
 import hunternif.mc.atlas.client.TextureSetMap;
 import hunternif.mc.atlas.client.Textures;
 import hunternif.mc.atlas.client.gui.GuiAtlas;
+import hunternif.mc.atlas.client.gui.SignpostLabelGui;
+import hunternif.mc.atlas.client.render.SignpostRenderer;
 import hunternif.mc.atlas.ext.ExtTileIdMap;
 import hunternif.mc.atlas.ext.ExtTileTextureConfig;
 import hunternif.mc.atlas.ext.ExtTileTextureMap;
@@ -16,10 +18,13 @@ import hunternif.mc.atlas.ext.VillageWatcher;
 import hunternif.mc.atlas.marker.MarkerTextureConfig;
 import hunternif.mc.atlas.marker.MarkerTextureMap;
 import hunternif.mc.atlas.marker.NetherPortalWatcher;
+import hunternif.mc.atlas.signpost.SignpostBlock;
+import hunternif.mc.atlas.signpost.SignpostTileEntity;
 import hunternif.mc.atlas.util.Log;
 
 import java.io.File;
 
+import cpw.mods.fml.client.registry.ClientRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -95,6 +100,8 @@ public class ClientProxy extends CommonProxy {
 		super.init(event);
 		guiAtlas = new GuiAtlas();
 		
+		ClientRegistry.bindTileEntitySpecialRenderer(SignpostTileEntity.class, new SignpostRenderer());
+		
 		FMLCommonHandler.instance().bus().register(this);
 	}
 	
@@ -102,6 +109,14 @@ public class ClientProxy extends CommonProxy {
 	public void postInit(FMLPostInitializationEvent event) {
 		super.postInit(event);
 		guiAtlas.setMapScale(AntiqueAtlasMod.settings.defaultScale);
+	}
+	
+	@Override
+	public void openSignpostLabelGui(int x, int y, int z) {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.currentScreen == null) { // In-game screen
+			mc.displayGuiScreen(new SignpostLabelGui().setSignpost(x, y, z));
+		}
 	}
 	
 	@Override
@@ -296,6 +311,9 @@ public class ClientProxy extends CommonProxy {
 		setMarkerTextureIfNone("tower", Textures.MARKER_TOWER);
 		setMarkerTextureIfNone("scroll", Textures.MARKER_SCROLL);
 		setMarkerTextureIfNone("tomb", Textures.MARKER_TOMB);
+		setMarkerTextureIfNone(SignpostBlock.MARKER_TYPE, Textures.MARKER_SIGNPOST);
+		// Legacy type name used by the old Signposts addon:
+		setMarkerTextureIfNone("signPost", Textures.MARKER_SIGNPOST);
 	}
 	/** Only applies the change if no texture is registered for this marker type.
 	 * This prevents overwriting of the config when there is no real change. */

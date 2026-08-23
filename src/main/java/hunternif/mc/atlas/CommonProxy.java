@@ -78,6 +78,9 @@ public class CommonProxy {
 	
 	public void openAtlasGUI(ItemStack stack) {}
 
+	/** Opens the dialog for naming a signpost at the given coordinates. */
+	public void openSignpostLabelGui(int x, int y, int z) {}
+
 	/**
 	 * Returns a side-appropriate EntityPlayer for use during message handling
 	 */

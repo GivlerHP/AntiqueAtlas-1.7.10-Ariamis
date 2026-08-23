@@ -14,6 +14,9 @@ import hunternif.mc.atlas.marker.GlobalMarkersDataHandler;
 import hunternif.mc.atlas.marker.MarkersDataHandler;
 import hunternif.mc.atlas.marker.NetherPortalWatcher;
 import hunternif.mc.atlas.network.PacketDispatcher;
+import hunternif.mc.atlas.signpost.SignpostBlock;
+import hunternif.mc.atlas.signpost.SignpostMarkerItem;
+import hunternif.mc.atlas.signpost.SignpostTileEntity;
 import hunternif.mc.atlas.util.Log;
 
 import java.io.File;
@@ -57,6 +60,9 @@ public class AntiqueAtlasMod {
 	public static ItemAtlas itemAtlas;
 	public static ItemEmptyAtlas itemEmptyAtlas;
 
+	public static SignpostBlock blockSignpost;
+	public static SignpostMarkerItem itemSignpostMarker;
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		Log.setModID(ID);
@@ -70,6 +76,15 @@ public class AntiqueAtlasMod {
 		
 		GameRegistry.registerItem(itemAtlas, "antiqueAtlas");
 		GameRegistry.registerItem(itemEmptyAtlas, "emptyAntiqueAtlas");
+
+		// The signpost and its marker item are admin tools, deliberately
+		// left without crafting recipes:
+		blockSignpost = new SignpostBlock();
+		GameRegistry.registerBlock(blockSignpost, "signpost");
+		GameRegistry.registerTileEntity(SignpostTileEntity.class, "signpostTileEntity");
+
+		itemSignpostMarker = new SignpostMarkerItem();
+		GameRegistry.registerItem(itemSignpostMarker, "signpostMarker");
 	}
 	
 	@EventHandler
