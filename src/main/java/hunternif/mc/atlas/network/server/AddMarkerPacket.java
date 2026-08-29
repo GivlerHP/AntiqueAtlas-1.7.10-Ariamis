@@ -67,7 +67,7 @@ public class AddMarkerPacket extends AbstractServerMessage<AddMarkerPacket> {
 	@Override
 	protected void process(EntityPlayer player, Side side) {
 		// Make sure it's this player's atlas :^)
-		if (!player.inventory.hasItemStack(new ItemStack(AntiqueAtlasMod.itemAtlas, 1, atlasID))) {
+		if (!hunternif.mc.atlas.item.ItemAtlas.playerHasAtlas(player, atlasID)) {
 			Log.warn("Player %s attempted to put marker into someone else's Atlas #%d",
 					player.getGameProfile().getName(), atlasID);
 			return;

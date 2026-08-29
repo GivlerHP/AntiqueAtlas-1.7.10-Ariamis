@@ -1,5 +1,6 @@
 package hunternif.mc.atlas;
 
+import baubles.api.BaublesApi;
 import hunternif.mc.atlas.core.BiomeDetectorBase;
 import hunternif.mc.atlas.ext.ExtTileConfig;
 import hunternif.mc.atlas.ext.ExtTileIdMap;
@@ -9,12 +10,16 @@ import java.io.File;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.inventory.IInventory;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class CommonProxy {
@@ -36,6 +41,20 @@ public class CommonProxy {
 	
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
+		FMLCommonHandler.instance().bus().register(this);
+	}
+
+	@SubscribeEvent
+	public void onPlayerTick(PlayerTickEvent event) {
+		if (event.phase != Phase.END) return;
+		IInventory baubles = BaublesApi.getBaubles(event.player);
+		if (baubles == null) return;
+		for (int slot = 0; slot < baubles.getSizeInventory(); slot++) {
+			ItemStack stack = baubles.getStackInSlot(slot);
+			if (stack != null && stack.getItem() == AntiqueAtlasMod.itemAtlas) {
+				AntiqueAtlasMod.itemAtlas.onUpdate(stack, event.player.worldObj, event.player, slot, false);
+			}
+		}
 	}
 	
 	public void postInit(FMLPostInitializationEvent event) {

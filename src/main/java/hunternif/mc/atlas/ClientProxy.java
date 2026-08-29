@@ -21,12 +21,15 @@ import hunternif.mc.atlas.marker.NetherPortalWatcher;
 import hunternif.mc.atlas.signpost.SignpostBlock;
 import hunternif.mc.atlas.signpost.SignpostTileEntity;
 import hunternif.mc.atlas.util.Log;
+import baubles.api.BaublesApi;
 
 import java.io.File;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -36,7 +39,9 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import org.lwjgl.input.Keyboard;
 
 public class ClientProxy extends CommonProxy {
 	private TextureSetMap textureSetMap;
@@ -49,6 +54,7 @@ public class ClientProxy extends CommonProxy {
 	private MarkerTextureConfig markerTextureConfig;
 	
 	private GuiAtlas guiAtlas;
+	private KeyBinding openAtlasKey;
 	
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
@@ -99,10 +105,11 @@ public class ClientProxy extends CommonProxy {
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
 		guiAtlas = new GuiAtlas();
+		openAtlasKey = new KeyBinding("key.antiqueatlas.open", Keyboard.KEY_M, "key.categories.antiqueatlas");
+		ClientRegistry.registerKeyBinding(openAtlasKey);
 		
 		ClientRegistry.bindTileEntitySpecialRenderer(SignpostTileEntity.class, new SignpostRenderer());
 		
-		FMLCommonHandler.instance().bus().register(this);
 	}
 	
 	@Override
@@ -372,6 +379,13 @@ public class ClientProxy extends CommonProxy {
 	/** Checks if any of the configs's data has been marked dirty and saves it. */
 	@SubscribeEvent
 	public void onClientTick(ClientTickEvent event) {
+		if (event.phase == Phase.END && openAtlasKey.isPressed()) {
+			Minecraft mc = Minecraft.getMinecraft();
+			if (mc.currentScreen == null && mc.thePlayer != null) {
+				ItemStack atlas = findAtlasToOpen(mc.thePlayer);
+				if (atlas != null) openAtlasGUI(atlas);
+			}
+		}
 		if (textureSetMap.isDirty()) {
 			Log.info("Saving texture set config");
 			textureSetConfig.save(textureSetMap);
@@ -392,5 +406,20 @@ public class ClientProxy extends CommonProxy {
 			markerTextureConfig.save(markerTextureMap);
 			markerTextureMap.setDirty(false);
 		}
+	}
+
+	private ItemStack findAtlasToOpen(EntityPlayer player) {
+		IInventory baubles = BaublesApi.getBaubles(player);
+		if (baubles != null) {
+			for (int slot = 0; slot < baubles.getSizeInventory(); slot++) {
+				ItemStack stack = baubles.getStackInSlot(slot);
+				if (stack != null && stack.getItem() == AntiqueAtlasMod.itemAtlas) return stack;
+			}
+		}
+		for (int slot = 0; slot < player.inventory.mainInventory.length; slot++) {
+			ItemStack stack = player.inventory.mainInventory[slot];
+			if (stack != null && stack.getItem() == AntiqueAtlasMod.itemAtlas) return stack;
+		}
+		return null;
 	}
 }

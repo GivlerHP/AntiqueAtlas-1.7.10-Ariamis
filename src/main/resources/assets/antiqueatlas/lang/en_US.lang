@@ -1,5 +1,7 @@
 item.antiqueAtlas.name=Antique Atlas
 item.emptyAntiqueAtlas.name=Empty Antique Atlas
+key.categories.antiqueatlas=Antique Atlas
+key.antiqueatlas.open=Open Atlas
 
 gui.antiqueatlas.scalebar=Scale in blocks
 gui.antiqueatlas.addMarker=Add marker

@@ -54,7 +54,7 @@ public class PutBiomeTilePacket extends AbstractMessage<PutBiomeTilePacket> {
 	protected void process(EntityPlayer player, Side side) {
 		if (side.isServer()) {
 			// Make sure it's this player's atlas :^)
-			if (!player.inventory.hasItemStack(new ItemStack(AntiqueAtlasMod.itemAtlas, 1, atlasID))) {
+			if (!hunternif.mc.atlas.item.ItemAtlas.playerHasAtlas(player, atlasID)) {
 				Log.warn("Player %s attempted to modify someone else's Atlas #%d",
 						player.getGameProfile().getName(), atlasID);
 				return;

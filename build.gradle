@@ -27,7 +27,7 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << '-Xlint:unchecked'
 }
 
-version = "1.7-Ariamis"
+version = "1.9-Ariamis"
 group= "kenkron.antiqueatlasoverlay" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Antiqueatlas-1.7.10"
 

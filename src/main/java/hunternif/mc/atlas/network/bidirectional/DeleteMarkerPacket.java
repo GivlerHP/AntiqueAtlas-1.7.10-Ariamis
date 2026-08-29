@@ -58,7 +58,7 @@ public class DeleteMarkerPacket extends AbstractMessage<DeleteMarkerPacket> {
 	protected void process(EntityPlayer player, Side side) {
 		if (side.isServer()) {
 			// Make sure it's this player's atlas :^)
-			if (side.isServer() && !player.inventory.hasItemStack(new ItemStack(AntiqueAtlasMod.itemAtlas, 1, atlasID))) {
+			if (side.isServer() && !hunternif.mc.atlas.item.ItemAtlas.playerHasAtlas(player, atlasID)) {
 				Log.warn("Player %s attempted to delete marker from someone else's Atlas #%d",
 						player.getGameProfile().getName(), atlasID);
 				return;

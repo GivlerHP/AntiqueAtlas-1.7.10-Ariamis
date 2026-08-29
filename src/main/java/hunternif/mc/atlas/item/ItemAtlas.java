@@ -1,6 +1,7 @@
 package hunternif.mc.atlas.item;
 
 import baubles.api.IBauble;
+import baubles.api.BaublesApi;
 import hunternif.mc.atlas.AntiqueAtlasMod;
 import hunternif.mc.atlas.SettingsConfig;
 import hunternif.mc.atlas.core.AtlasData;
@@ -19,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -35,6 +37,18 @@ public class ItemAtlas extends Item implements IBauble {
 	private final BiomeDetectorNether biomeDetectorNether = new BiomeDetectorNether();
 	
 	private SettingsConfig settings;
+
+	public static boolean playerHasAtlas(EntityPlayer player, int atlasID) {
+		ItemStack requested = new ItemStack(AntiqueAtlasMod.itemAtlas, 1, atlasID);
+		if (player.inventory.hasItemStack(requested)) return true;
+		IInventory baubles = BaublesApi.getBaubles(player);
+		if (baubles == null) return false;
+		for (int slot = 0; slot < baubles.getSizeInventory(); slot++) {
+			ItemStack stack = baubles.getStackInSlot(slot);
+			if (stack != null && stack.isItemEqual(requested)) return true;
+		}
+		return false;
+	}
 
 	public ItemAtlas(SettingsConfig settings) {
 		this.settings = settings;
@@ -79,10 +93,7 @@ public class ItemAtlas extends Item implements IBauble {
 
 	@Override
 	public void onWornTick(ItemStack stack, net.minecraft.entity.EntityLivingBase player) {
-		// Для корректной работы карты при ношении в поясе
-		if (!player.worldObj.isRemote && player instanceof EntityPlayer) {
-			this.onUpdate(stack, player.worldObj, player, -1, false);
-		}
+		// Updated centrally from CommonProxy so belt behavior is server-authoritative.
 	}
 
 	@Override

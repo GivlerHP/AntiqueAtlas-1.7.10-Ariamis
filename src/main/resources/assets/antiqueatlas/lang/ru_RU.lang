@@ -1,5 +1,7 @@
 item.antiqueAtlas.name=Старинный атлас
 item.emptyAntiqueAtlas.name=Пустой старинный атлас
+key.categories.antiqueatlas=Старинный атлас
+key.antiqueatlas.open=Открыть атлас
 
 gui.antiqueatlas.scalebar=Масштаб в блоках
 gui.antiqueatlas.addMarker=Добавить метку

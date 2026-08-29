@@ -217,7 +217,10 @@ public class GuiAtlas extends GuiComponent {
 	private DimensionData biomeData;
 	
 	/** Coordinate scale factor relative to the actual screen size. */
-	private int screenScale;
+	/** Real pixels per scaled pixel, for converting to scissor coordinates.
+	 * A float, so that fractional GUI scales (e.g. RightProperGUIScale)
+	 * don't shift the clipping rectangle. */
+	private float pixelScaleX, pixelScaleY;
 	
 	/** Progress bar for exporting images. */
 	private ProgressBarOverlay progressBar = new ProgressBarOverlay(100, 2);
@@ -352,7 +355,9 @@ public class GuiAtlas extends GuiComponent {
 		super.initGui();
 		state.switchTo(NORMAL); //TODO: his causes the Export PNG progress bar to disappear when resizing game window
 		Keyboard.enableRepeatEvents(true);
-		screenScale = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight).getScaleFactor();
+		ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+		pixelScaleX = (float) mc.displayWidth / resolution.getScaledWidth();
+		pixelScaleY = (float) mc.displayHeight / resolution.getScaledHeight();
 		setCentered();
 	}
 	
@@ -587,9 +592,12 @@ public class GuiAtlas extends GuiComponent {
 			GL11.glColor4f(1, 1, 1, 0.5f);
 		}
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor((getGuiX() + CONTENT_X)*screenScale,
-				mc.displayHeight - (getGuiY() + CONTENT_Y + MAP_HEIGHT)*screenScale,
-				MAP_WIDTH*screenScale, MAP_HEIGHT*screenScale);
+		int contentLeft = Math.round((getGuiX() + CONTENT_X) * pixelScaleX);
+		int contentRight = Math.round((getGuiX() + CONTENT_X + MAP_WIDTH) * pixelScaleX);
+		int contentTop = Math.round((getGuiY() + CONTENT_Y) * pixelScaleY);
+		int contentBottom = Math.round((getGuiY() + CONTENT_Y + MAP_HEIGHT) * pixelScaleY);
+		GL11.glScissor(contentLeft, mc.displayHeight - contentBottom,
+				contentRight - contentLeft, contentBottom - contentTop);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		// Find chunk coordinates of the top left corner of the map.

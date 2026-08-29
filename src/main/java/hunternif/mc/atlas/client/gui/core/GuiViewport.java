@@ -13,8 +13,10 @@ public class GuiViewport extends GuiComponent {
 	/** The container component for content. */
 	protected final GuiComponent content = new GuiComponent();
 	
-	/** Coordinate scale factor relative to the actual screen size. */
-	private int screenScale;
+	/** Real pixels per scaled pixel, for converting to scissor coordinates.
+	 * A float, so that fractional GUI scales (e.g. RightProperGUIScale)
+	 * don't shift the clipping rectangle. */
+	private float pixelScaleX, pixelScaleY;
 	
 	public GuiViewport() {
 		this.addChild(content);
@@ -36,15 +38,19 @@ public class GuiViewport extends GuiComponent {
 	@Override
 	public void initGui() {
 		super.initGui();
-		screenScale = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight).getScaleFactor();
+		ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+		pixelScaleX = (float) mc.displayWidth / resolution.getScaledWidth();
+		pixelScaleY = (float) mc.displayHeight / resolution.getScaledHeight();
 	}
 	
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float par3) {
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor( getGuiX()*screenScale,
-				mc.displayHeight - (getGuiY() + properHeight)*screenScale,
-				properWidth*screenScale, properHeight*screenScale);
+		int left = Math.round(getGuiX() * pixelScaleX);
+		int right = Math.round((getGuiX() + properWidth) * pixelScaleX);
+		int top = Math.round(getGuiY() * pixelScaleY);
+		int bottom = Math.round((getGuiY() + properHeight) * pixelScaleY);
+		GL11.glScissor(left, mc.displayHeight - bottom, right - left, bottom - top);
 		
 		// Draw the content (child GUIs):
 		super.drawScreen(mouseX, mouseY, par3);
